@@ -39,18 +39,19 @@ public with sharing class ToDoController {
         return getToDOs(tsks);
     }
 
-    public static List<ToDo> getToDOs(List<SObject> tsks){
-        List<ToDo> todos = new List<ToDo>();
-        for (SObject tsk : tsks){
-            ToDo todo = new ToDo();
-            todo.todoId = tsk.Id;
-            todo.todoName = String.valueOf(tsk.get('Name'));
-            todo.todoDate = Date.valueOf(tsk.get('CreatedDate'));
-            todo.done = Boolean.valueOf(tsk.get('Done__c'));
-            todos.add(todo);
-        }
-        return todos;
+    public static List<ToDo> getToDos(List<SObject> objs) {
+    List<ToDo> todos = new List<ToDo>();
+    for (SObject obj : objs) {
+      ToDo todo = new ToDo();
+      todo.todoId = obj.Id;
+      todo.todoName = String.valueOf(obj.get('Name'));
+      todo.todoDate = Date.valueOf(obj.get('CreatedDate'));
+      todo.done = Boolean.valueOf(obj.get('Done__c'));
+      todos.add(todo);
     }
+
+    return todos;
+  }
 
     @AuraEnabled
     public static List<ToDo> getCurrentTodos(){

@@ -1,6 +1,7 @@
 /* eslint-disable @lwc/lwc/no-async-operation */
 import { LightningElement, track } from 'lwc';
-
+import addToDO from '@salesforce/apex/ToDoController.addToDO';
+import getCurrentTodos from '@salesforce/apex/ToDoController.getCurrentTodos';
 export default class ToDoManger extends LightningElement {
     @track time = "6:18 PM"
     @track greeting = "Good Evening"
@@ -8,7 +9,7 @@ export default class ToDoManger extends LightningElement {
 
     connectedCallback(){
         this.getTime();
-
+        this.fetchToDos();
         setInterval(() => {
             this.getTime();
         }, 1000);
@@ -48,13 +49,40 @@ export default class ToDoManger extends LightningElement {
     addTodoHandler(){
         const inputBox = this.template.querySelector("lightning-input");
         const todo = {
-            todoId : this.todos.length,
             todoName : inputBox.value,
-            done: false,
-            todoDate : new Date()
+            done: false
         }
-        this.todos.push(todo);
+
+        addToDO({payload : JSON.stringify(todo)}).then(result =>{
+            if(result){
+            console.log("To-Do item inserted Succesfully");
+            this.fetchToDos();
+            }
+        })
+        .catch(error =>{
+            console.error("Error in inserting To-Do item " + error);
+        })   
+        //this.todos.push(todo);
         inputBox.value="";
+    }
+
+    fetchToDos(){
+        getCurrentTodos().then(result =>{
+            if(result){
+            console.log("To-Do item fetched Succesfully", result.length);
+            this.todos = result;
+            } 
+        }).catch(error =>{
+            console.error("Error in fetching To-Do item " + error);
+        })
+    }
+
+    updateHandler(){
+        this.fetchToDos();
+    }
+
+    deleteHandler(){
+        this.fetchToDos();
     }
 
     get upComingTask() {
